@@ -1,46 +1,41 @@
-name: "CodeQL Analysis"
+name: "CodeQL Analysis and OWASP Dependency Check"
 
 on:
   pull_request:
     branches:
       - develop
-    types: [opened, synchronize, reopened]  # Triggers the workflow when a PR is opened, synchronized, or reopened.
-    # To filter PRs from feature/* branches only
-    paths-ignore:
-      - 'docs/**'
-      - 'tests/**'
+    paths:
+      - 'pom.xml'  # Runs if pom.xml changes
   push:
-    branches-ignore: 
-      - develop
+    branches:
       - feature/**
-  
+    paths:
+      - 'pom.xml'  # Runs if pom.xml is pushed
+
 jobs:
   analyze:
-    name: Analyze Code with CodeQL
+    name: CodeQL Analysis and Dependency Vulnerability Check
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'java' ]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
-        languages: ${{ matrix.language }}
+        languages: java
 
-    - name: Autobuild
-      run: |
-        if [[ ! -f build.gradle && ! -f pom.xml ]]; then
-          echo "No recognized build files (pom.xml, build.gradle), running default build commands."
-          exit 1
-        elif [[ -f pom.xml ]]; then
-          mvn -B install
-        fi
+    - name: Build with Maven
+      run: mvn clean install -DskipTests
+
+    - name: Run OWASP Dependency Check
+      run: mvn org.owasp:dependency-check-maven:check
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
