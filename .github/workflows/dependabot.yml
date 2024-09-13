@@ -1,7 +1,12 @@
 version: 2
 updates:
   - package-ecosystem: "maven"
-    directory: "/"
+    directory: "/"  # Directory where pom.xml is located (usually the root)
     schedule:
-      interval: "daily"
-    open-pull-requests-limit: 10
+      interval: daily  # Can be set to 'weekly' or 'monthly' as needed
+    commit-message:
+      prefix: "fix(deps):"
+    open-pull-requests-limit: 5
+    rebase-strategy: auto
+    reviewers:
+      - Vivek2905  # Replace with your GitHub username or team for review
