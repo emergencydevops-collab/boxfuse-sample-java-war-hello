@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"  # Root directory where your `pom.xml` is located
+    schedule:
+      interval: daily  # You can change to 'weekly' or 'monthly' if needed
+    commit-message:
+      prefix: "fix(deps):"
+    open-pull-requests-limit: 5
+    rebase-strategy: auto
+    reviewers:
+      - Vivek2905 # Replace with your GitHub username
