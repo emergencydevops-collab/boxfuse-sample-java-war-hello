@@ -2,13 +2,18 @@ name: "CodeQL Analysis"
 
 on:
   pull_request:
-    branches: [develop]
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'pom.xml'
+    branches:
+      - develop
+    types: [opened, synchronize, reopened]  # Triggers the workflow when a PR is opened, synchronized, or reopened.
+    # To filter PRs from feature/* branches only
+    paths-ignore:
+      - 'docs/**'
+      - 'tests/**'
   push:
-    branches-ignore: ['feature/*']
-
+    branches-ignore: 
+      - develop
+      - feature/**
+  
 jobs:
   analyze:
     name: Analyze Code with CodeQL
