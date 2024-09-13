@@ -1,0 +1,41 @@
+name: "CodeQL Analysis"
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'pom.xml'
+  push:
+    branches-ignore: ['feature/*']
+
+jobs:
+  analyze:
+    name: Analyze Code with CodeQL
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Autobuild
+      run: |
+        if [[ ! -f build.gradle && ! -f pom.xml ]]; then
+          echo "No recognized build files (pom.xml, build.gradle), running default build commands."
+          exit 1
+        elif [[ -f pom.xml ]]; then
+          mvn -B install
+        fi
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
